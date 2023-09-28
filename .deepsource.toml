@@ -1,0 +1,13 @@
+version = 1
+
+[[analyzers]]
+name = "docker"
+
+[[analyzers]]
+name = "go"
+
+  [analyzers.meta]
+  import_root = "github.com/sidntrivedi012/blink"
+
+[[transformers]]
+name = "gofumpt"
