@@ -3,6 +3,7 @@
 #
 # Binaries for programs and plugins
 *.exe
+blink
 *.exe~
 *.dll
 *.so
