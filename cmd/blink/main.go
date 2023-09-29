@@ -12,26 +12,26 @@ var (
 	exitCode int = 0
 )
 
-// ParseFlags parses the command line arguments to blink.
-func ParseFlags() {
+// parseFlags parses the command line arguments to blink.
+func parseFlags() {
 	debug := flag.Bool("debug", false, "Enable debug logging")
 	flag.Parse()
 	Debug = *debug
 }
 
-// SetLogLevel configures the logging behaviour for the application.
-func SetLogLevel() {
+// setLogLevel configures the logging behaviour for the application.
+func setLogLevel() {
 	if Debug {
 		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug})))
 	}
 }
 
 func main() {
-	SetLogLevel()
-	ParseFlags()
 	defer func() {
 		os.Exit(exitCode)
 	}()
+	setLogLevel()
+	parseFlags()
 
 	// Initialize the HTTP and Redis server.
 	server := NewServer()
