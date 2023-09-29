@@ -11,6 +11,7 @@ type LongURL struct {
 	URL string `json:"long_url"`
 }
 
+// shortenURL is the handler that takes care of the URL shortening API.
 func (s *Server) shortenURL(c echo.Context) error {
 	var longURL LongURL
 	if err := c.Bind(&longURL); err != nil {
@@ -24,7 +25,7 @@ func (s *Server) shortenURL(c echo.Context) error {
 	return c.String(http.StatusOK, shortenedURL)
 }
 
-// redirectShortenedURL redirects the shortened URL to the long form URL if
+// redirectShortenedURL is the handler that redirects the shortened URL to the long form URL if
 // an entry for it is stored in the database.
 func (s *Server) redirectShortenedURL(c echo.Context) error {
 	urlHash := strings.TrimLeft(c.Request().RequestURI, "/")
@@ -41,7 +42,7 @@ func (s *Server) redirectShortenedURL(c echo.Context) error {
 	return c.Redirect(http.StatusTemporaryRedirect, longURL)
 }
 
-// getShortenedURLMetrics returns the top three most shortened URL hostnames in the response
+// getShortenedURLMetrics is the handler that returns the top three most shortened URL hostnames in the response
 // along with the count.
 func (s *Server) getShortenedURLMetrics(c echo.Context) error {
 	topDomains, err := fetchMostShortenedURLs(s.ctx, s.Client)
