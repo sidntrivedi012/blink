@@ -1,2 +1,2 @@
 build:
-	go build ./cmd/blink/.
+	go build -o ./blink.bin ./cmd/blink/.
