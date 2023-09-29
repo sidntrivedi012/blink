@@ -24,10 +24,6 @@ func (s *Server) shortenURL(c echo.Context) error {
 	return c.String(http.StatusOK, shortenedURL)
 }
 
-func (*Server) getShortenedURLMetrics(_ echo.Context) error {
-	return nil
-}
-
 // redirectShortenedURL redirects the shortened URL to the long form URL if
 // an entry for it is stored in the database.
 func (s *Server) redirectShortenedURL(c echo.Context) error {
@@ -43,4 +39,14 @@ func (s *Server) redirectShortenedURL(c echo.Context) error {
 		return c.String(http.StatusNotFound, "found no entry of this short url")
 	}
 	return c.Redirect(http.StatusTemporaryRedirect, longURL)
+}
+
+// getShortenedURLMetrics returns the top three most shortened URL hostnames in the response
+// along with the count.
+func (s *Server) getShortenedURLMetrics(c echo.Context) error {
+	topDomains, err := fetchMostShortenedURLs(s.ctx, s.Client)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	return c.String(http.StatusOK, topDomains)
 }
