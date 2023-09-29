@@ -18,6 +18,9 @@ You need to have Go (>1.13 at least) and Redis installed.
 1. Clone this repository.
 2. Run `make build` to build the binary named as `blink.bin`.
 3. In another terminal session, start a local redis server through the `redis-server` command. It should be running by default on port `6379`.
+4. Set environment variables:
+    - `REDIS_ADDRESS=localhost:6379`
+    - `APP_PORT=8080`
 4. Run `make run` to execute the binary.
 
 ### Docker

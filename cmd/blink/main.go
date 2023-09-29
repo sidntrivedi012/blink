@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/joho/godotenv"
 	"log/slog"
 	"os"
 )
@@ -27,26 +26,12 @@ func setLogLevel() {
 	}
 }
 
-// loadEnvVars loads the environment variables present in `.env` at the root of the project.
-func loadEnvVars() (err error) {
-	if err = godotenv.Load(); err != nil {
-		return
-	}
-	return
-}
-
 func main() {
 	defer func() {
 		os.Exit(exitCode)
 	}()
-
 	setLogLevel()
 	parseFlags()
-	if err := loadEnvVars(); err != nil {
-		slog.Error(err.Error())
-		exitCode = 1
-		return
-	}
 
 	// Initialize the HTTP and Redis server.
 	server := NewServer()
