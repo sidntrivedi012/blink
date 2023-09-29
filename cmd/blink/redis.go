@@ -81,6 +81,9 @@ func fetchMostShortenedURLs(ctx context.Context, client *redis.Client) (string, 
 		longURLFrequencyMap[urlHostName] = longURLFrequencyMap[urlHostName] + 1
 	}
 
+	// Now, as we have the map of the hostnames alongwith the frequency
+	// of their shortening, we can sort the map in descending order of values
+	// and then pick the top three.
 	type hostCount struct {
 		name  string
 		count int
@@ -94,9 +97,13 @@ func fetchMostShortenedURLs(ctx context.Context, client *redis.Client) (string, 
 		return hostCountSlice[i].count > hostCountSlice[j].count
 	})
 
+	// Picking top three from the slice sorted in descending order.
 	topThreeHosts := ""
-	for _, host := range hostCountSlice {
-		topThreeHosts = topThreeHosts + fmt.Sprintf("%s\t%d\n", host.name, host.count)
+	for i := 0; i <= 2; i++ {
+		if i == len(hostCountSlice) {
+			break
+		}
+		topThreeHosts = topThreeHosts + fmt.Sprintf("%s\t%d\n", hostCountSlice[i].name, hostCountSlice[i].count)
 	}
 	return topThreeHosts, nil
 }
