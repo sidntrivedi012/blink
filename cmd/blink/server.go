@@ -5,14 +5,14 @@ import (
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/net/context"
 	"log/slog"
+	"os"
 
 	"github.com/labstack/echo/v4"
 )
 
 var (
-	blinkPort    int    = 8080
-	redisPort    int    = 6379
-	hostName     string = fmt.Sprintf("localhost:%d", blinkPort)
+	blinkPort    string
+	hostName     string
 	serverScheme string = "http"
 )
 
@@ -29,7 +29,7 @@ func NewServer() *Server {
 	e.HidePort = true
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("localhost:%d", redisPort),
+		Addr:     os.Getenv("REDIS_ADDRESS"),
 		Password: "",
 		DB:       0,
 	})
@@ -38,7 +38,12 @@ func NewServer() *Server {
 
 // Start starts the echo server.
 func (s *Server) Start() error {
-	err := s.Echo.Start(fmt.Sprintf(":%d", blinkPort))
+	blinkPort = os.Getenv("APP_PORT")
+	if blinkPort == "" {
+		blinkPort = "8080"
+	}
+	hostName = fmt.Sprintf("localhost:%s", blinkPort)
+	err := s.Echo.Start(fmt.Sprintf(":%s", blinkPort))
 	if err != nil {
 		slog.Error("failed to start server", slog.Any("err", err))
 		return err
