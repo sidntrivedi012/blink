@@ -43,3 +43,26 @@ func getKeyValueFromCache(ctx context.Context, redisClient *redis.Client, key st
 	}
 	return val, nil
 }
+
+// getURLFromHash fetches the long URL for a hash stored in Redis cache.
+// Helps in the redirection workflow.
+func getLongURLFromCache(ctx context.Context, client *redis.Client, value string) (bool, string, error) {
+	// Get all keys in the Redis cache.
+	keys, err := client.Keys(ctx, "*").Result()
+	if err != nil {
+		return false, "", err
+	}
+
+	// Iterate over keys and check if the value exists
+	for _, key := range keys {
+		val, err := client.Get(ctx, key).Result()
+		if err != nil && err != redis.Nil {
+			return false, "", err
+		}
+
+		if val == value {
+			return true, key, nil
+		}
+	}
+	return false, "", nil
+}

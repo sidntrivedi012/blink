@@ -11,6 +11,7 @@ import (
 
 const base62Charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+// shortenLongURL implements the logic for handling the shortening feature of the application.
 func shortenLongURL(ctx context.Context, longURL string, redisClient *redis.Client) (string, error) {
 	// Check if the long URL exists in the Redis cache.
 	// If yes, return the corresponding shortened URL for it.
@@ -33,10 +34,6 @@ func shortenLongURL(ctx context.Context, longURL string, redisClient *redis.Clie
 		return "", err
 	}
 	return getURLFromHash(encodedURL), nil
-}
-
-func getURLFromHash(hash string) string {
-	return fmt.Sprintf("%s://%s/%s", serverScheme, domainName, hash)
 }
 
 // encodeLongURL encodes the long URL sent as a parameter into a shorter URL
@@ -72,4 +69,9 @@ func reverse(s []byte) {
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]
 	}
+}
+
+// getURLFromHash creates a formatted URL from the hash and returns it.
+func getURLFromHash(hash string) string {
+	return fmt.Sprintf("%s://%s/%s", serverScheme, hostName, hash)
 }

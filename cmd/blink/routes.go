@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,6 +28,19 @@ func (*Server) getShortenedURLMetrics(_ echo.Context) error {
 	return nil
 }
 
-func (*Server) routeShortenedURL(c echo.Context) error {
-	return c.String(http.StatusOK, "hello")
+// redirectShortenedURL redirects the shortened URL to the long form URL if
+// an entry for it is stored in the database.
+func (s *Server) redirectShortenedURL(c echo.Context) error {
+	urlHash := strings.TrimLeft(c.Request().RequestURI, "/")
+
+	// Check that if a long URL corresponding to this short URL exists in the
+	// database. If yes, redirect to that.
+	exists, longURL, err := getLongURLFromCache(s.ctx, s.Client, urlHash)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	if !exists {
+		return c.String(http.StatusNotFound, "found no entry of this short url")
+	}
+	return c.Redirect(http.StatusTemporaryRedirect, longURL)
 }

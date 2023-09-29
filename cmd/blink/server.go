@@ -12,7 +12,7 @@ import (
 const (
 	blinkPort    int    = 8080
 	redisPort    int    = 6379
-	domainName   string = "localhost"
+	hostName     string = "localhost:8080"
 	serverScheme string = "http"
 )
 
@@ -51,5 +51,5 @@ func (s *Server) Start() error {
 func (s *Server) AddRoutes() {
 	s.Echo.POST("/api/shorten", s.shortenURL)
 	s.Echo.GET("/api/metrics", s.getShortenedURLMetrics)
-	s.Echo.GET("/*", s.routeShortenedURL)
+	s.Echo.GET("/*", s.redirectShortenedURL)
 }
