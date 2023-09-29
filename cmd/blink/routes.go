@@ -41,7 +41,8 @@ func (s *Server) redirectShortenedURL(c echo.Context) error {
 	return c.Redirect(http.StatusTemporaryRedirect, longURL)
 }
 
-// g
+// getShortenedURLMetrics returns the top three most shortened URL hostnames in the response
+// along with the count.
 func (s *Server) getShortenedURLMetrics(c echo.Context) error {
 	topDomains, err := fetchMostShortenedURLs(s.ctx, s.Client)
 	if err != nil {
