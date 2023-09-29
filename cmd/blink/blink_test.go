@@ -19,6 +19,7 @@ func TestEncodeLongURL(t *testing.T) {
 func TestGetURLFromHash(t *testing.T) {
 	hash := "g5gFCB6"
 	expectedURL := "http://localhost:8080/g5gFCB6"
+	hostName = "localhost:8080"
 
 	result := getURLFromHash(hash)
 	assert.Equal(t, expectedURL, result)
