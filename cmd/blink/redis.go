@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"log/slog"
+	"net/url"
+	"sort"
+	"strings"
 )
 
 // checkURLInCache checks if a key similar to the long URL that is being
@@ -33,17 +36,6 @@ func setRedisKeyValue(ctx context.Context, redisClient *redis.Client, key string
 	return nil
 }
 
-// getKeyValueFromCache fetches the value of a key from redis cache.
-func getKeyValueFromCache(ctx context.Context, redisClient *redis.Client, key string) (string, error) {
-	val, err := redisClient.Get(ctx, key).Result()
-	if err == redis.Nil {
-		return "", fmt.Errorf("key not found: %s", key)
-	} else if err != nil {
-		return "", fmt.Errorf("error retrieving value for key %s: %v", key, err)
-	}
-	return val, nil
-}
-
 // getURLFromHash fetches the long URL for a hash stored in Redis cache.
 // Helps in the redirection workflow.
 func getLongURLFromCache(ctx context.Context, client *redis.Client, value string) (bool, string, error) {
@@ -65,4 +57,46 @@ func getLongURLFromCache(ctx context.Context, client *redis.Client, value string
 		}
 	}
 	return false, "", nil
+}
+
+// fetchMostShortenedURLs fetches the top three most shortened domains
+// from the Redis database.
+func fetchMostShortenedURLs(ctx context.Context, client *redis.Client) (string, error) {
+	longURLFrequencyMap := make(map[string]int)
+	// Get all keys in the Redis cache.
+	longURLs, err := client.Keys(ctx, "*").Result()
+	if err != nil {
+		return "", err
+	}
+
+	// Iterate over keys and check if the value exists
+	for _, longURL := range longURLs {
+		parsedURL, err := url.Parse(longURL)
+		if err != nil {
+			return "", err
+		}
+
+		urlHostName := strings.TrimPrefix(parsedURL.Hostname(), "www.")
+		slog.Info("log", slog.String(longURL, urlHostName))
+		longURLFrequencyMap[urlHostName] = longURLFrequencyMap[urlHostName] + 1
+	}
+
+	type hostCount struct {
+		name  string
+		count int
+	}
+
+	var hostCountSlice []hostCount
+	for k, v := range longURLFrequencyMap {
+		hostCountSlice = append(hostCountSlice, hostCount{k, v})
+	}
+	sort.Slice(hostCountSlice, func(i, j int) bool {
+		return hostCountSlice[i].count > hostCountSlice[j].count
+	})
+
+	topThreeHosts := ""
+	for _, host := range hostCountSlice {
+		topThreeHosts = topThreeHosts + fmt.Sprintf("%s\t%d\n", host.name, host.count)
+	}
+	return topThreeHosts, nil
 }
