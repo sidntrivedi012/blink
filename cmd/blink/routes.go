@@ -23,10 +23,10 @@ func (s *Server) shortenURL(c echo.Context) error {
 	return c.String(http.StatusOK, shortenedURL)
 }
 
-func (s *Server) getShortenedURLMetrics(c echo.Context) error {
+func (*Server) getShortenedURLMetrics(_ echo.Context) error {
 	return nil
 }
 
-func (s *Server) routeShortenedURL(c echo.Context) error {
+func (*Server) routeShortenedURL(c echo.Context) error {
 	return c.String(http.StatusOK, "hello")
 }
