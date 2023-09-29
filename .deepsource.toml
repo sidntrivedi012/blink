@@ -10,4 +10,4 @@ name = "go"
   import_root = "github.com/sidntrivedi012/blink"
 
 [[transformers]]
-name = "gofumpt"
+name = "gofmt"
