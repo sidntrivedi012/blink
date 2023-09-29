@@ -30,6 +30,7 @@ func main() {
 	// Initialize the HTTP and Redis server.
 	server := NewServer()
 	server.ctx = context.Background()
+	defer server.Client.Close()
 
 	// Add routes and start the server.
 	server.AddRoutes()
