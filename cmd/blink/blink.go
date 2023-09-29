@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/labstack/echo/v4"
 	"log/slog"
+
+	"github.com/labstack/echo/v4"
 )
 
 const BlinkPort int = 8080
