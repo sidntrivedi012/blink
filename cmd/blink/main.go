@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log/slog"
 	"os"
@@ -26,11 +27,11 @@ func main() {
 	SetLogLevel()
 	ParseFlags()
 
-	// Establish connection with Redis server.
-	_ = initRedisClient()
-
-	// Start the HTTP server.
+	// Initialize the HTTP and Redis server.
 	server := NewServer()
+	server.ctx = context.Background()
+
+	// Add routes and start the server.
 	server.AddRoutes()
 	err := server.Start()
 	if err != nil {
