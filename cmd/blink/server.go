@@ -9,10 +9,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-const (
+var (
 	blinkPort    int    = 8080
 	redisPort    int    = 6379
-	hostName     string = "localhost:8080"
+	hostName     string = fmt.Sprintf("localhost:%d", blinkPort)
 	serverScheme string = "http"
 )
 
