@@ -7,7 +7,10 @@ import (
 	"os"
 )
 
-var Debug bool
+var (
+	Debug    bool
+	exitCode int = 0
+)
 
 // ParseFlags parses the command line arguments to blink.
 func ParseFlags() {
@@ -26,6 +29,9 @@ func SetLogLevel() {
 func main() {
 	SetLogLevel()
 	ParseFlags()
+	defer func() {
+		os.Exit(exitCode)
+	}()
 
 	// Initialize the HTTP and Redis server.
 	server := NewServer()
@@ -37,6 +43,7 @@ func main() {
 	err := server.Start()
 	if err != nil {
 		slog.Error(err.Error())
-		os.Exit(1)
+		exitCode = 1
+		return
 	}
 }
