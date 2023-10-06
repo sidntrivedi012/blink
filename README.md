@@ -1,5 +1,5 @@
 # blink
-A URL shortener service that produces URLs shorter than the blink of an eye.
+A URL shortener service.
 
 ## Features
 
